@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Book Search Results</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/page_design.css' %}">
+        <script>
+            function confirmDelete(event) {
+                if (!confirm("Are you sure you want to delete this book?")) {
+                    event.preventDefault();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Book Search Results</h1>
+            <form method="GET" action="{% url 'book_search' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="button">Search</button>
+                <a href="{% url 'book_list' %}" class="button">Back</a>
+            </form>
+            <div class="container">
+                <h1>Book List</h1>         
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Publish Date</th>
+                            <th>Pages</th>
+                            <th>Price</th>
+                            <th>Actions</th>                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.publish_date }}</td>
+                            <td>{{ book.page }}</td>
+                            <td>{{ book.price }}</td>
+                            <td class="actions">
+                                <a href="{% url 'book_update' book.id %}" class="button">Edit</a>
+                                <form action="{% url 'book_delete' book.id %}" method="post" style="display:inline;" onsubmit="confirmDelete(event);">
+                                    {% csrf_token %}
+                                    <button type="submit" class="button delete">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <li>No books found.</li>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
